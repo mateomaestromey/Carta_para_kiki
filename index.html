@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Felices 2 años</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #a8edea, #6fd3c4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 15px 60px;
+      color: #333;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .contenedor {
+      width: 100%;
+      max-width: 900px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* BOTÓN CARTA */
+    .carta-boton {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .carta-boton button {
+      background: #69d3c3;
+      border: none;
+      color: #fff;
+      padding: 15px 35px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 5px 15px rgba(255, 107, 129, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .carta-boton button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(117, 238, 220, 0.6);
+      background: #69d3c3;
+    }
+
+    /* MODAL CARTA */
+    .carta-modal-fondo {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;           /* Oculto por defecto */
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      z-index: 999;
+    }
+
+    .carta-modal-fondo.activo {
+      display: flex;
+    }
+
+    .carta-modal {
+      background: #fffdf8;
+      border-radius: 20px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 80vh;
+      padding: 25px 25px 20px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow-y: auto;
+      border: 1px solid #f0e2c6;
+    }
+
+    .carta-modal h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 1.6rem;
+      color: #ff6b81;
+    }
+
+    .carta-texto {
+      line-height: 1.6;
+      font-size: 1rem;
+      margin-top: 10px;
+      white-space: pre-line; /* Respeta saltos de línea */
+    }
+
+    .carta-cerrar {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      border: none;
+      background: transparent;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .carta-cerrar:hover {
+      color: #666;
+    }
+
+    /* SECCIÓN CARRUSEL */
+    .carrusel-titulo {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .carrusel {
+      margin-top: 15px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 15px;
+      background: #000;
+      height: 700px;
+    }
+
+    .carrusel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: stretch;
+      height: 100%;
+    }
+
+    .carrusel-slide.activo {
+      opacity: 1;
+      position: absolute;
+    }
+
+    .carrusel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.8);
+    }
+
+    .carrusel-frase {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 15px 18px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+      color: #fff;
+      font-size: 1rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    /* CONTROLES CARRUSEL */
+    .carrusel-controles {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none; /* Para que solo botones reciban click */
+    }
+
+    .carrusel-boton {
+      pointer-events: auto;
+      border: none;
+      background: rgba(0, 0, 0, 0.4);
+      color: #fff;
+      font-size: 1.4rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+
+    .carrusel-boton:hover {
+      background: rgba(0, 0, 0, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .carrusel-indicadores {
+      position: absolute;
+      bottom: 8px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .carrusel-indicador {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.4);
+      border: none;
+      cursor: pointer;
+    }
+
+    .carrusel-indicador.activo {
+      background: #ff6b81;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
+      .carta-modal {
+        padding: 20px 15px 15px;
+      }
+      .carrusel {
+        height: 260px;
+      }
+      .carrusel-frase {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Felices 2 años</h1>
+
+  <div class="contenedor">
+    <!-- BOTÓN PARA ABRIR CARTA -->
+    <div class="carta-boton">
+      <button id="abrirCarta">Abrir carta</button>
+    </div>
+
+    <!-- MODAL CARTA -->
+    <div class="carta-modal-fondo" id="cartaModal">
+      <div class="carta-modal">
+        <button class="carta-cerrar" id="cerrarCarta">&times;</button>
+        <h2>Para vos mi amor, de mateito💌</h2>
+        <div class="carta-texto">
+          Bueno felices 2 años, que decirte ya te escribi tantas cartas que perdi la cuenta,
+          igual nunca me voy a cansar de escribirte y decirte lo mucho que te amo.
+          Gracias por estos dos años vividos junto a vos, por todo lo que me enseñaste y por todo lo que me haces sentir,
+          Gracias por ser como sos conmigo, por siempre mostrarme una sonrisa, apoyarme en todo y por hacerme sentir la persona más especial del mundo cada día, gracias por amarme de forma incondicional todos los dias, gracias por siempre decirme cosas lindas, gracias por ser mi compañera de vida y gracias por siempre hacerme reir y ser feliz.
+          Te amo con todo mi corazón y espero que podamos seguir cumpliendo muchos años más juntos.
+
+          Vamos por muchos mas años juntos, por la boda, los hijos y todo lo que nos queda por vivir.
+          vamos por los viajes, las aventuras y todo lo que nos queda por descubrir juntos.
+          Te amo mi vida, feliz aniversario. 💖💖💖
+        </div>
+      </div>
+    </div>
+
+    <!-- CARRUSEL DE FOTOS -->
+    <div class="carrusel-titulo">Nuestros momentos ✨</div>
+    <div class="carrusel" id="carrusel">
+      <!-- SLIDE 1 -->
+      <div class="carrusel-slide activo">
+        <!-- Cambiá "foto1.jpg" por la ruta de tu foto -->
+        <img src="Foto1.jpg" alt="Foto 1 juntos">
+        <div class="carrusel-frase">Con vos, hasta los días normales se vuelven especiales.</div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="carrusel-slide">
+        <img src="Foto2.jpg" alt="Foto 2 juntos">
+        <div class="carrusel-frase">Gracias por ser mi lugar seguro en el mundo.</div>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="carrusel-slide">
+        <img src="Foto4.jpg" alt="Foto 3 juntos">
+        <div class="carrusel-frase">Dos años, miles de recuerdos y un futuro enorme por delante.</div>
+      </div>
+
+           <!-- SLIDE 3 -->
+      <div class="carrusel-slide">
+        <img src="foto5.jpg" alt="Foto 4 juntos">
+        <div class="carrusel-frase">Estos son solo los primeros dos años, se vienen muchos mas.</div>
+      </div>
+
+
+
+      <!-- CONTROLES -->
+      <div class="carrusel-controles">
+        <button class="carrusel-boton" id="prev">&#10094;</button>
+        <button class="carrusel-boton" id="next">&#10095;</button>
+      </div>
+
+      <!-- INDICADORES -->
+      <div class="carrusel-indicadores" id="indicadores">
+        <button class="carrusel-indicador activo"></button>
+        <button class="carrusel-indicador"></button>
+        <button class="carrusel-indicador"></button>
+        <button class="carrusel-indicador"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- CARTA ---
+    const abrirCartaBtn = document.getElementById('abrirCarta');
+    const cerrarCartaBtn = document.getElementById('cerrarCarta');
+    const cartaModal = document.getElementById('cartaModal');
+
+    abrirCartaBtn.addEventListener('click', () => {
+      cartaModal.classList.add('activo');
+    });
+
+    cerrarCartaBtn.addEventListener('click', () => {
+      cartaModal.classList.remove('activo');
+    });
+
+    // Cerrar si hace click fuera de la carta
+    cartaModal.addEventListener('click', (e) => {
+      if (e.target === cartaModal) {
+        cartaModal.classList.remove('activo');
+      }
+    });
+
+    // --- CARRUSEL ---
+    const slides = document.querySelectorAll('.carrusel-slide');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const indicadoresCont = document.getElementById('indicadores');
+    const indicadores = indicadoresCont.querySelectorAll('.carrusel-indicador');
+
+    let indiceActual = 0;
+
+    function mostrarSlide(nuevoIndice) {
+      // Asegurar que el índice esté dentro del rango
+      if (nuevoIndice < 0) nuevoIndice = slides.length - 1;
+      if (nuevoIndice >= slides.length) nuevoIndice = 0;
+
+      // Quitar clase activo
+      slides[indiceActual].classList.remove('activo');
+      indicadores[indiceActual].classList.remove('activo');
+
+      // Agregar clase activo al nuevo
+      slides[nuevoIndice].classList.add('activo');
+      indicadores[nuevoIndice].classList.add('activo');
+
+      indiceActual = nuevoIndice;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      mostrarSlide(indiceActual - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      mostrarSlide(indiceActual + 1);
+    });
+
+    indicadores.forEach((indicador, i) => {
+      indicador.addEventListener('click', () => {
+        mostrarSlide(i);
+      });
+    });
+
+    // Opcional: cambio automático cada 4 segundos
+    // Descomentar si lo querés:
+    /*
+    setInterval(() => {
+      mostrarSlide(indiceActual + 1);
+    }, 4000);
+    */
+  </script>
+</body>
+</html>
