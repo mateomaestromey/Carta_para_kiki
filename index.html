@@ -25,9 +25,17 @@
     h1 {
       font-size: 2.5rem;
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
       color: #ffffff;
       text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* CONTADOR BAJO EL TÍTULO */
+    #contadorAmor {
+      margin-bottom: 20px;
+      color: #ffffff;
+      text-align: center;
+      font-weight: 500;
     }
 
     /* CONTENEDOR PRINCIPAL */
@@ -253,7 +261,10 @@
   </style>
 </head>
 <body>
-  <h1>Felices 2 años</h1>
+  <!-- TÍTULO DINÁMICO -->
+  <h1 id="tituloAmor">Felices 2 años</h1>
+  <!-- CONTADOR DE AÑOS / MESES / DÍAS -->
+  <p id="contadorAmor">Llevamos juntos: ... 💚</p>
 
   <div class="contenedor">
     <!-- BOTÓN PARA ABRIR CARTA -->
@@ -285,7 +296,6 @@
     <div class="carrusel" id="carrusel">
       <!-- SLIDE 1 -->
       <div class="carrusel-slide activo">
-        <!-- Cambiá "foto1.jpg" por la ruta de tu foto -->
         <img src="Foto1.jpg" alt="Foto 1 juntos">
         <div class="carrusel-frase">Con vos, hasta los días normales se vuelven especiales.</div>
       </div>
@@ -302,13 +312,11 @@
         <div class="carrusel-frase">Dos años, miles de recuerdos y un futuro enorme por delante.</div>
       </div>
 
-           <!-- SLIDE 3 -->
+      <!-- SLIDE 4 -->
       <div class="carrusel-slide">
         <img src="foto5.jpg" alt="Foto 4 juntos">
         <div class="carrusel-frase">Estos son solo los primeros dos años, se vienen muchos mas.</div>
       </div>
-
-
 
       <!-- CONTROLES -->
       <div class="carrusel-controles">
@@ -357,15 +365,12 @@
     let indiceActual = 0;
 
     function mostrarSlide(nuevoIndice) {
-      // Asegurar que el índice esté dentro del rango
       if (nuevoIndice < 0) nuevoIndice = slides.length - 1;
       if (nuevoIndice >= slides.length) nuevoIndice = 0;
 
-      // Quitar clase activo
       slides[indiceActual].classList.remove('activo');
       indicadores[indiceActual].classList.remove('activo');
 
-      // Agregar clase activo al nuevo
       slides[nuevoIndice].classList.add('activo');
       indicadores[nuevoIndice].classList.add('activo');
 
@@ -387,12 +392,95 @@
     });
 
     // Opcional: cambio automático cada 4 segundos
-    // Descomentar si lo querés:
     /*
     setInterval(() => {
       mostrarSlide(indiceActual + 1);
     }, 4000);
     */
+
+    // --- CONTADOR DE TIEMPO JUNTOS ---
+
+    // Fecha de inicio: 27 de noviembre de 2023
+    // new Date(año, mes-1, día) → noviembre = 10
+    const fechaInicio = new Date(2023, 10, 27);
+
+    const tituloAmor = document.getElementById('tituloAmor');
+    const contadorAmor = document.getElementById('contadorAmor');
+
+    function calcularDiferencia(fechaDesde, fechaHasta) {
+      let años = fechaHasta.getFullYear() - fechaDesde.getFullYear();
+      let meses = fechaHasta.getMonth() - fechaDesde.getMonth();
+      let dias = fechaHasta.getDate() - fechaDesde.getDate();
+
+      if (dias < 0) {
+        const mesAnterior = new Date(fechaHasta.getFullYear(), fechaHasta.getMonth(), 0);
+        dias += mesAnterior.getDate();
+        meses -= 1;
+      }
+
+      if (meses < 0) {
+        meses += 12;
+        años -= 1;
+      }
+
+      return { años, meses, dias };
+    }
+
+    function plural(n, singular, plural) {
+      if (n === 1) return `${n} ${singular}`;
+      return `${n} ${plural}`;
+    }
+
+    function actualizarContador() {
+      const hoy = new Date();
+      const fechaHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+
+      const { años, meses, dias } = calcularDiferencia(fechaInicio, fechaHoy);
+
+      // Texto para el título (años + meses)
+      let textoTitulo = "";
+
+      if (años > 0 && meses >= 0) {
+        const textoAños = plural(años, "año", "años");
+
+        if (meses > 0) {
+          const textoMeses = plural(meses, "mes", "meses");
+          textoTitulo = `Felices ${textoAños} y ${textoMeses}`;
+        } else {
+          textoTitulo = `Felices ${textoAños}`;
+        }
+      } else if (años === 0 && meses > 0) {
+        const textoMeses = plural(meses, "mes", "meses");
+        textoTitulo = `Felices ${textoMeses}`;
+      } else {
+        textoTitulo = "Felices juntos 💚";
+      }
+
+      if (tituloAmor) {
+        tituloAmor.textContent = textoTitulo;
+      }
+
+      // Texto del contador detallado (años, meses y días)
+      let partes = [];
+      if (años > 0) partes.push(plural(años, "año", "años"));
+      if (meses > 0) partes.push(plural(meses, "mes", "meses"));
+      if (dias > 0) partes.push(plural(dias, "día", "días"));
+      if (partes.length === 0) partes.push("0 días");
+
+      const textoContador = `Llevamos juntos: ${partes.join(", ")} 💚`;
+
+      if (contadorAmor) {
+        contadorAmor.textContent = textoContador;
+      }
+
+      // También actualizo título de la pestaña
+      document.title = textoTitulo;
+    }
+
+    // Actualizar apenas carga
+    actualizarContador();
+    // Y cada hora por las dudas
+    setInterval(actualizarContador, 60 * 60 * 1000);
   </script>
 </body>
 </html>
